@@ -1,22 +1,29 @@
 import { Header, Nav, Main, Footer } from "./components";
-import {
-  AddPicturesToGallery,
-  GalleryPictures,
-  PrintFormOnSubmit,
-} from "./lib";
+import * as state from "/Store";
+import Navigo from "navigo";
+import { capitalize } from "lodash";
 
-function render() {
+const router = new Navigo(window.location.origin);
+
+router
+  .on({
+    ":page": (params) => render(state[capitalize(params.page)]),
+    "/": () => render(state.Home),
+  })
+  .resolve();
+
+function render(st = state.Home) {
   document.querySelector("#root").innerHTML = `
-    ${Header()}
-    ${Nav()}
-    ${Main()}
+    ${Header(st)}
+    ${Nav(state.Links)}
+    ${Main(st)}
     ${Footer()}
   `;
 
-  addEventListeners();
+  router.updatePageLinks();
 }
 
-render();
+render(state.Home);
 
 function addEventListeners() {
   // add menu toggle to bars icon in nav bar
